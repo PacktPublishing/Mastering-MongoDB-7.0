@@ -1,16 +1,18 @@
-// MongoDB Atlas Search Metadata Query using $searchMeta Pipeline Stage
+// MongoDB Atlas Search: Counting Products within a Specific Price Range using $searchMeta
 
-db.collection.aggregate([
+db.products.aggregate([
   {
-    // The $searchMeta stage returns metadata about the search results
-    $searchMeta: {
-      "index": "yourIndexName",           // The name of the Atlas Search index
-      "text": {                           // Text search operator
-        "query": "search term",
-        "path": "fieldToSearch"
+    // The $searchMeta stage is used for obtaining metadata about search results
+    "$searchMeta": {
+      "range": {
+        "path": "price",   // The field to perform the range query on
+        "gte": 50,         // Greater than or equal to 50
+        "lt": 100          // Less than 100
       },
-      "count": {}                         // Count options for the results
+      "count": {
+        "type": "total"   // Count type, here we're using 'total' for the total count
+      }
     }
-  },
-  // Additional aggregation stages can be added here if needed
+  }
+  // This query will return the total count of products with prices between 50 and 100 dollars
 ]);
