@@ -1,58 +1,60 @@
 # CRUD Operations Using PyMongo in Python
 
+from pymongo import MongoClient
+from pprint import pprint
+
 # Install PyMongo using pip:
 # python -m pip install pymongo
 
-from pymongo import MongoClient
-from bson.objectid import ObjectId
-
-# Replace the placeholder with your MongoDB connection string
-uri = "<connection_string>"
+# MongoDB Connection
+uri = "<connection_string>"  # Replace with your connection string
 client = MongoClient(uri)
+books = client.mongodb_books.books
 
-# Connect to the database and collection
-db = client['mydatabase']
-collection = db['books']
-
-# ---- Create ----
-
-# Inserting a single document
-single_document = {
-    'isbn': '101',
-    'title': 'Mastering PyMongo',
-    'price': 30
+# ---- Inserting Documents ----
+# Insert a new book document
+book = {
+    'isbn': '301',
+    'name': 'Python and MongoDB',
+    'meta': {'version': 'MongoDB 7.0'},
+    'price': 60
 }
-result = collection.insert_one(single_document)
-print(f"Inserted document with ID: {result.inserted_id}")
+insert_result = books.insert_one(book)
+pprint(insert_result.inserted_id)
 
-# Inserting multiple documents
-documents = [
-    {'isbn': '102', 'title': 'Python and MongoDB', 'price': 50},
-    {'isbn': '103', 'title': 'Advanced Python', 'price': 40}
-]
-result = collection.insert_many(documents)
-print(f"Inserted document IDs: {result.inserted_ids}")
+# ---- Finding Documents ----
+# Fetch documents with the name "Python and MongoDB"
+for document in books.find({"name": "Python and MongoDB"}):
+    pprint(document)
 
-# ---- Read ----
+# Using dot notation for nested fields
+for document in books.find({'meta.version': {"$regex": ".*?g.*?7\.0$", "$options": "i"}}):
+    pprint(document)
 
-# Finding documents
-for book in collection.find({'isbn': '101'}):
-    print(book)
+# Using comparison operators
+for document in books.find({'price': {"$gt": 50}}):
+    pprint(document)
 
-# ---- Update ----
+# Logical AND query
+for document in books.find({"name": "Advanced MongoDB Techniques", "price": 70}):
+    pprint(document)
 
-# Updating a single document
-collection.update_one({'isbn': '101'}, {'$set': {'title': 'Updated Title'}})
+# Logical OR query
+for document in books.find({"$or": [{'name': 'Advanced MongoDB Techniques'}, {'isbn': '301'}]}):
+    pprint(document)
 
-# Updating multiple documents
-collection.update_many({'price': {'$gt': 35}}, {'$set': {'status': 'premium'}})
+# ---- Updating Documents ----
+# Update a single document
+books.update_one({"name": "Advanced MongoDB Techniques"}, {"$set": {"price": 75}})
 
-# ---- Delete ----
+# Fetch and print the updated document
+updated_document = books.find_one({"name": "Advanced MongoDB Techniques"})
+pprint(updated_document)
 
-# Deleting a single document
-collection.delete_one({'isbn': '103'})
-
-# Deleting multiple documents
-collection.delete_many({'price': {'$lte': 40}})
+# ---- Deleting Documents ----
+# Delete a single document
+isbn_to_delete = '303'
+delete_result = books.delete_one({"isbn": isbn_to_delete})
+pprint(delete_result.deleted_count)
 
 # Note: Replace <connection_string> with your actual MongoDB connection string.
