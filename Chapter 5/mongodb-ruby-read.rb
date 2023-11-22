@@ -1,43 +1,59 @@
-# Reading Data from MongoDB using the Ruby Driver
+# Comprehensive MongoDB Operations with Nested Documents using Ruby
 
 require 'mongo'
 include Mongo
 
-# Connect to the database (Replace with your connection string)
+# Connect to the database
+# Replace 'mongodb://HOST:PORT/DATABASE_NAME' with your actual connection string
 connection_string = "mongodb://HOST:PORT/DATABASE_NAME"
 client = Mongo::Client.new(connection_string)
 @collection = client[:books]
 
-# Basic find operation using a single criterion
-result = @collection.find({ isbn: '101' })
-result.each { |doc| puts doc.inspect }
+# Inserting a single document
+single_document = {
+  isbn: '101',
+  name: 'Mastering MongoDB 7.0',
+  price: 30
+}
+@collection.insert_one(single_document)
 
-# Find operation using multiple criteria (AND operation)
-result = @collection.find({ isbn: '101', name: 'Mastering MongoDB 7.0' })
-result.each { |doc| puts doc.inspect }
+# Finding documents with multiple criteria
+@collection.find({ isbn: '101', name: 'Mastering MongoDB 7.0' }).each do |doc|
+  puts doc.inspect
+end
 
-# Using various query options
-result = @collection.find({ isbn: '101' })
-                   .projection(price: 1)
-                   .sort(name: -1)
-                   .limit(5)
-                   .skip(2)
-                   .batch_size(10)
-result.each { |doc| puts doc.inspect }
+# Inserting multiple documents
+multiple_documents = [
+  { isbn: '102', name: 'MongoDB in 7 years', price: 50 },
+  { isbn: '103', name: 'MongoDB for experts', price: 40 }
+]
+@collection.insert_many(multiple_documents)
 
-# Using .count_documents and .estimated_document_count
-total_count = @collection.count_documents({ isbn: '101' })
-puts "Total count: #{total_count}"
+# Query options example
+@collection.find({ isbn: '101' })
+           .projection(price: 1)
+           .sort(name: -1)
+           .limit(5)
+           .skip(2)
+           .batch_size(10)
+           .each { |doc| puts doc.inspect }
 
-estimated_count = @collection.estimated_document_count
-puts "Estimated count: #{estimated_count}"
+# Document count example
+puts "Total count: #{@collection.count_documents({ isbn: '101' })}"
+puts "Estimated count: #{@collection.estimated_document_count}"
 
-# Using .distinct
-distinct_prices = @collection.distinct(:price)
-puts "Distinct prices: #{distinct_prices.inspect}"
+# Handling nested documents
+nested_document = {
+  isbn: '104',
+  name: 'Python and MongoDB',
+  meta: { version: 'MongoDB 7.0' },
+  price: 60
+}
+@collection.insert_one(nested_document)
 
-# Chaining operations with OR operator
-result = @collection.find('$or' => [{ isbn: '101' }, { isbn: '102' }])
-result.each { |doc| puts doc.inspect }
+# Retrieving nested document data
+@collection.find({ 'meta.version' => 'MongoDB 7.0' }).each do |doc|
+  puts doc.inspect
+end
 
-# Note: Replace HOST, PORT, and DATABASE_NAME with your actual MongoDB connection details
+# Note: Replace the connection string with your actual MongoDB server details.
