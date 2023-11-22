@@ -1,4 +1,4 @@
-// Advanced Scripting in MongoDB Shell (mongosh)
+// Advanced Scripting in MongoDB Shell (mongosh) with Batch Inserts
 
 // Declaring a JavaScript variable in the shell
 let title = 'MongoDB in a nutshell';
@@ -23,4 +23,21 @@ queryBooksByIsbn = function(isbn) {
 // This example fetches books with ISBN 102
 queryBooksByIsbn(102);
 
+// Batch Inserting documents using a loop (less efficient method)
+authorMongoDBFactory = function() {
+  for (let loop = 0; loop < 1000; loop++) {
+    db.books.insertOne({ name: "MongoDB factory book" + loop });
+  }
+};
+
+// Batch Inserting documents using bulk operations (more efficient method)
+fastAuthorMongoDBFactory = function() {
+  let bulk = db.books.initializeUnorderedBulkOp();
+  for (let loop = 0; loop < 1000; loop++) {
+    bulk.insert({ name: "MongoDB factory book" + loop });
+  }
+  bulk.execute();
+};
+
 // Note: This script is meant to be run in the MongoDB shell, which supports JavaScript
+// Use `authorMongoDBFactory()` for individual inserts, and `fastAuthorMongoDBFactory()` for bulk inserts
