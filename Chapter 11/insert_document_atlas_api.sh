@@ -8,7 +8,6 @@
 # Replace the following placeholders with your actual values before running this script:
 # <Your-Atlas-API-Key>: Your MongoDB Atlas API key.
 # myapp-abcde: The App ID of your MongoDB Atlas application.
-# You may also need to adjust the dataSource, database, and collection names.
 
 curl -s "https://data.mongodb-api.com/app/myapp-abcde/endpoint/data/v1/action/insertOne" \
   -X POST \
