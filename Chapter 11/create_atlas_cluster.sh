@@ -4,8 +4,7 @@
 # This command installs the atlas-deployment from the MongoDB Helm repository into the Kubernetes cluster.
 # It sets up the deployment in the 'my-book' namespace and configures the Atlas project with the necessary credentials and details.
 
-helm install atlas-deployment \
-mongodb/atlas-deployment \
+helm install atlas-deployment mongodb/atlas-deployment \
 --namespace=my-book \
 --create-namespace \
 --set project.atlasProjectName='My Project' \
