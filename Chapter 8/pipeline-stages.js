@@ -3,7 +3,7 @@ var projectStage = {
 };
 var sortStage = {
     "$sort": {
-        "imdb.rating"
+        "imdb.rating": 1
     }
 };
 var pipeline = [projectStage, sortStage];
